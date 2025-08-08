@@ -57,6 +57,7 @@ nexus-ai/
    - Primary transcript fetching using youtube-transcript-api
    - No API key required
    - Handles TranscriptsDisabled and NoTranscriptFound exceptions
+   - Uses updated API with `fetch()` method and `FetchedTranscript` objects
 
 3. **`fetch_with_pytube(video_id: str, languages: list[str])`**
    - Fallback method using pytube and BeautifulSoup
@@ -74,6 +75,17 @@ nexus-ai/
 
 ## Installation
 
+### Setup Virtual Environment:
+```bash
+# Create virtual environment (if not already created)
+python3 -m venv venv
+
+# Activate virtual environment
+source venv/bin/activate  # On macOS/Linux
+# or
+venv\Scripts\activate     # On Windows
+```
+
 ### Required Dependencies:
 ```bash
 pip install youtube-transcript-api pytube beautifulsoup4 reportlab
@@ -82,11 +94,20 @@ pip install youtube-transcript-api pytube beautifulsoup4 reportlab
 ### Optional Dependencies:
 - `reportlab` - For PDF generation (can be installed separately)
 
+### API Compatibility Notes:
+- Updated to work with `youtube-transcript-api` v1.2.2+
+- Uses `fetch()` method instead of deprecated `get_transcript()`
+- Handles `FetchedTranscript` objects with `snippets` structure
+
 ## Usage
 
 ### Basic Usage:
 ```bash
-python youtube_transcript_fetcher.py --lang en
+# Activate virtual environment first
+source venv/bin/activate
+
+# Run the application
+python3 youtube_transcript_fetcher.py --lang en
 ```
 
 ### Command Line Arguments:
@@ -126,6 +147,7 @@ The application includes comprehensive error handling for:
 - File I/O errors
 - Missing dependencies
 - Network connectivity issues
+- API compatibility issues (handles both old and new API structures)
 
 ## Sample Output Files
 
@@ -139,6 +161,7 @@ The project includes several sample transcript files:
 - **Python Version**: 3.x (uses `__future__` annotations)
 - **Virtual Environment**: `venv/` directory for dependency isolation
 - **OS Support**: Cross-platform (tested on macOS)
+- **API Version**: Compatible with `youtube-transcript-api` v1.2.2+
 
 ## Git Configuration
 
@@ -146,6 +169,14 @@ The `.gitignore` file excludes:
 - Virtual environment (`venv/`)
 - All media files (audio/video formats)
 - Generated transcript files (JSON, TXT, PDF)
+
+## Recent Updates
+
+### API Compatibility Fixes (Latest):
+- **Fixed API Method**: Updated from `get_transcript()` to `fetch()` method
+- **Data Structure**: Added support for `FetchedTranscript` objects with `snippets`
+- **Backward Compatibility**: Maintains support for both old and new API structures
+- **Virtual Environment**: Proper setup and activation instructions
 
 ## Future Enhancements
 

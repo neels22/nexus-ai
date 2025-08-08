@@ -31,7 +31,8 @@ def fetch_with_yta(video_id: str, languages: list[str]):
         YouTubeTranscriptApi, TranscriptsDisabled, NoTranscriptFound,
     )
     try:
-        return YouTubeTranscriptApi.get_transcript(video_id, languages=languages)
+        api = YouTubeTranscriptApi()
+        return api.fetch(video_id, languages=languages)
     except (TranscriptsDisabled, NoTranscriptFound):
         return None  # let caller decide next steps
 
@@ -151,11 +152,26 @@ def main():
     # Save to all three formats
     success_count = 0
     
+    # Convert FetchedTranscript to list of dicts for compatibility
+    if hasattr(transcript, 'snippets'):
+        # New API structure
+        transcript_list = [
+            {
+                'text': snippet.text,
+                'start': snippet.start,
+                'duration': snippet.duration
+            }
+            for snippet in transcript.snippets
+        ]
+    else:
+        # Old API structure (fallback)
+        transcript_list = transcript
+    
     # Save as JSON
     json_filename = filename + '.json'
     try:
         with open(json_filename, 'w', encoding='utf-8') as f:
-            json.dump(transcript, f, ensure_ascii=False, indent=2)
+            json.dump(transcript_list, f, ensure_ascii=False, indent=2)
         print(f"✅  JSON transcript saved to: {json_filename}")
         success_count += 1
     except Exception as e:
@@ -163,13 +179,13 @@ def main():
     
     # Save as TXT
     txt_filename = filename + '.txt'
-    if save_as_txt(transcript, txt_filename):
+    if save_as_txt(transcript_list, txt_filename):
         print(f"✅  TXT transcript saved to: {txt_filename}")
         success_count += 1
     
     # Save as PDF
     pdf_filename = filename + '.pdf'
-    if save_as_pdf(transcript, pdf_filename):
+    if save_as_pdf(transcript_list, pdf_filename):
         print(f"✅  PDF transcript saved to: {pdf_filename}")
         success_count += 1
     
